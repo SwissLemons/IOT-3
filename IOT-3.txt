@@ -1,0 +1,63 @@
+int botao = 8;
+int estado = 0;
+int pinoBuzzer = 13;
+int pinoLedVerde = 10;
+int pinoLedVermelho = 9;
+int pinoLdr = A1;
+int pinoPotenciometro = A0;
+
+void setup()
+{
+  Serial.begin(9600);
+  pinMode(botao, INPUT);
+  pinMode(pinoLedVerde, OUTPUT);
+  pinMode(pinoLedVermelho, OUTPUT);
+  pinMode(pinoBuzzer, OUTPUT);
+}
+
+void loop()
+{
+  if(digitalRead(botao) == HIGH){
+
+    if(estado == 0){
+    estado = 1;
+    delay(500);
+    }else if(estado == 1){
+    estado = 0;
+    delay(500);
+    }
+  }
+  if(estado == 0){
+    digitalWrite(pinoLedVermelho, HIGH);
+    digitalWrite(pinoLedVerde, LOW);
+    noTone(pinoBuzzer);
+
+  }
+  else if(estado == 1){
+  digitalWrite(pinoLedVermelho, LOW);
+  digitalWrite(pinoLedVerde, HIGH);
+  int valorLdr = analogRead(pinoLdr);
+  int valorPotenciometro = analogRead(pinoPotenciometro);
+  int limiarSensibilidade = map(valorPotenciometro, 0, 1023, 100, 900);
+
+    if(valorLdr < limiarSensibilidade){
+      tone(pinoBuzzer, 1500);
+      delay(150);
+      noTone(pinoBuzzer);
+      delay(50);
+      tone(pinoBuzzer, 900);
+      delay(300);
+      noTone(pinoBuzzer);
+      delay(200);
+    }else if(valorLdr > limiarSensibilidade){
+      noTone(pinoBuzzer);
+    }
+      Serial.print("LDR: ");
+      Serial.print(valorLdr);
+      Serial.print(" - Potenciômetro: ");
+      Serial.print(valorPotenciometro);
+      Serial.print(" - Limiar: ");
+      Serial.println(limiarSensibilidade);
+  }
+
+}
